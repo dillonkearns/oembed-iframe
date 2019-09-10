@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>oEmbed</title>
+    <meta charset="UTF-8" />
+    <script>
+      const apiUrl =
+        "https://cors-anywhere.herokuapp.com/https://publish.twitter.com/oembed?url=https%3A%2F%2Ftwitter.com%2Fdillontkearns%2Fstatus%2F1105250778233491456";
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET", apiUrl, false);
+      xmlHttp.send(null);
+      const response = JSON.parse(xmlHttp.responseText);
+
+      const scriptRegex = /<script(.*)<\/script>/g;
+      const html = response.html.replace(/async/, "");
+      let scripts = html
+        .match(scriptRegex)
+        .map(scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]);
+      console.log(scripts);
+
+      document.body.innerHTML = html;
+      function requireScript(scriptSrc) {
+        let scriptTag = document.createElement("script");
+        scriptTag.src = scriptSrc;
+
+        document.head.appendChild(scriptTag);
+      }
+      scripts.forEach(requireScript);
+    </script>
+  </head>
+
+  <body></body>
+</html>
