@@ -18,14 +18,17 @@
         .map(scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]);
       console.log(scripts);
 
-      document.body.innerHTML = html;
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.innerHTML = html;
+        scripts.forEach(requireScript);
+      });
+
       function requireScript(scriptSrc) {
         let scriptTag = document.createElement("script");
         scriptTag.src = scriptSrc;
 
         document.head.appendChild(scriptTag);
       }
-      scripts.forEach(requireScript);
     </script>
   </head>
 
