@@ -25,10 +25,13 @@
 
         const scriptRegex = /<script(.*)<\/script>/g;
         const html = response.html.replace(/async/, "");
-        let scripts = html
-          .match(scriptRegex)
-          .map(scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]);
-        console.log(scripts);
+        let matching = html.match(scriptRegex);
+        let scripts = [];
+        if (matching) {
+          scripts = matching.map(
+            scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]
+          );
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
           document.body.innerHTML = html;
