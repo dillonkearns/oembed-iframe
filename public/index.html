@@ -4,24 +4,37 @@
     <title>oEmbed</title>
     <meta charset="UTF-8" />
     <script>
-      const apiUrl =
-        "https://cors-anywhere.herokuapp.com/https://publish.twitter.com/oembed?url=https%3A%2F%2Ftwitter.com%2Fdillontkearns%2Fstatus%2F1105250778233491456";
-      let xmlHttp = new XMLHttpRequest();
-      xmlHttp.open("GET", apiUrl, false);
-      xmlHttp.send(null);
-      const response = JSON.parse(xmlHttp.responseText);
+      const queryParamUrl = new URLSearchParams(window.location.search).get(
+        "url"
+      );
+      if (queryParamUrl) {
+        renderOembed(queryParamUrl);
+      } else {
+        document.body.innerHTML =
+          "Try passing a url query parameter, like this: .....";
+      }
 
-      const scriptRegex = /<script(.*)<\/script>/g;
-      const html = response.html.replace(/async/, "");
-      let scripts = html
-        .match(scriptRegex)
-        .map(scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]);
-      console.log(scripts);
+      function renderOembed(oembedUrl) {
+        const apiUrl = `https://cors-anywhere.herokuapp.com/${encodeURI(
+          oembedUrl
+        )}`;
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", apiUrl, false);
+        xmlHttp.send(null);
+        const response = JSON.parse(xmlHttp.responseText);
 
-      document.addEventListener("DOMContentLoaded", () => {
-        document.body.innerHTML = html;
-        scripts.forEach(requireScript);
-      });
+        const scriptRegex = /<script(.*)<\/script>/g;
+        const html = response.html.replace(/async/, "");
+        let scripts = html
+          .match(scriptRegex)
+          .map(scriptTag => scriptTag.match(/src="([^"]*)"/, "")[1]);
+        console.log(scripts);
+
+        document.addEventListener("DOMContentLoaded", () => {
+          document.body.innerHTML = html;
+          scripts.forEach(requireScript);
+        });
+      }
 
       function requireScript(scriptSrc) {
         let scriptTag = document.createElement("script");
